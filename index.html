@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="#070A12" name="theme-color"/>
+<meta content="Interactive product builds in the Nexus suite." name="description"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Alibi — Logged &amp; Verified — Devin O’Rourke" property="og:title"/>
+<meta content="Interactive product builds in the Nexus suite." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://dev-in-portfolio.netlify.app/apps/alibi/" property="og:url"/>
+<meta content="https://dev-in-portfolio.netlify.app/assets/og.svg" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Alibi — Logged &amp; Verified — Devin O’Rourke" name="twitter:title"/>
+<meta content="Interactive product builds in the Nexus suite." name="twitter:description"/>
+<meta content="https://dev-in-portfolio.netlify.app/assets/og.svg" name="twitter:image"/>
+<title>Alibi — Logged &amp; Verified — Devin O’Rourke</title>
+<link href="/shared/tokens.css" rel="stylesheet"/><link href="/shared/nexus-topnav-v2.css?v=54" rel="stylesheet"/>
+<script defer="" src="/shared/toast.js"></script>
+<link href="styles.css" rel="stylesheet"/>
+<script>window.APP_ID="alibi-logged-verified";</script>
+<link href="/manifest.webmanifest" rel="manifest"/><link href="https://dev-in-portfolio.netlify.app/apps/alibi/" rel="canonical"><link href="/icon-192.png" rel="icon"/><script src="/runtime-guard.js"></script>
+<link href="/shared/tile-polish.css" rel="stylesheet"/>
+<link href="/shared/tap-physics.css" rel="stylesheet"/>
+<link href="/shared/ui-physics.css" rel="stylesheet"/>
+</link></head>
+<body data-app="alibi">
+  <nav class="nxTopNav"></nav>
+
+<header class="topbar dropdown-topbar">
+<div class="menu-title">Alibi — Logged &amp; Verified</div>
+</header>
+<nav aria-label="Primary navigation" class="tile-row-nav">
+<button class="tile-nav-btn" data-goto-tab="dashboard" type="button">Dashboard</button>
+<button class="tile-nav-btn" data-goto-tab="counting" type="button">Counting</button>
+<button class="tile-nav-btn" data-goto-tab="invoices" type="button">Invoices</button>
+<button class="tile-nav-btn" data-goto-tab="recipes" type="button">Recipes</button>
+<button class="tile-nav-btn" data-goto-tab="reports" type="button">Reports</button>
+ · </nav>
+<section aria-label="Kitchen Inventory" class="module-tile">
+<div aria-live="polite" class="save-status" id="saveStatus">
+<span class="dot"></span><span class="label">Saved</span>
+</div>
+<div class="mt-top">
+<div class="mt-brand">
+<div class="brand">
+<div aria-hidden="true" class="logo-dot"></div>
+</div>
+<div class="mt-actions">
+<div class="top-actions">
+<select class="select" id="monthSelect" title="Month"></select>
+<button class="btn ghost" id="btnNewMonth" title="Create month" type="button">+ Month</button>
+<button class="btn ghost" id="btnExportBackup" title="Export full backup JSON" type="button">Export</button>
+<button class="btn ghost" id="btnImportBackup" title="Import backup JSON" type="button">Import</button>
+<input accept="application/json" hidden="" id="importFile" type="file"/>
+</div>
+</div>
+</div>
+<div class="mt-quick">
+<div class="invoice-speedbar">
+<label class="switch">
+<input id="quickEntryToggle" type="checkbox"/>
+<span class="slider"></span>
+</label>
+<span class="qe-label">Quick Entry</span>
+<div class="vendor-chips" id="vendorChips"></div>
+</div>
+<div class="mt-tabs">
+</div>
+</div></div></section>
+<div class="context-bar">
+<div class="breadcrumb" id="breadcrumb">Home</div>
+<div class="progress" id="progress">Ready</div>
+</div>
+<main class="main" id="main">
+<!-- DASHBOARD -->
+<section class="panel active" id="panel-dashboard">
+<div aria-label="Dashboard quick stats" class="dash-tiles">
+<div class="stat-tile">
+<div class="st-k">COGS%</div>
+<div class="st-v" id="dashTileCogsPctVal">—</div>
+<div class="st-sub" id="dashTileCogsPctSub">Food+NA net</div>
+</div>
+<div class="stat-tile">
+<div class="st-k">Purchases</div>
+<div class="st-v" id="dashTilePurchVal">—</div>
+<div class="st-sub">Ingredients + Products</div>
+</div>
+<div class="stat-tile">
+<div class="st-k">End Inv</div>
+<div class="st-v" id="dashTileEndInvVal">—</div>
+<div class="st-sub">Value on hand</div>
+</div>
+<div class="stat-tile">
+<div class="st-k">Δ vs Target</div>
+<div class="st-v" id="dashTileDeltaTargetVal">—</div>
+<div class="st-sub" id="dashTileDeltaTargetSub">Target 30% COGS</div>
+</div>
+</div>
+<div class="grid">
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title">This Month</div>
+<div class="card-sub" id="dashMonthLabel">—</div>
+</div>
+<span class="pill purple">Auto-saved</span>
+</div>
+<div class="kv">
+<div class="k">Net Sales (Food+NA)</div><div class="v" id="dashSalesFoodNet">$0</div>
+<div class="k">Net Sales (Total)</div><div class="v" id="dashSalesTotalNet">$0</div>
+<div class="k">Ingredients COGS</div><div class="v" id="dashCogsIng">$0</div>
+<div class="k">Products COGS</div><div class="v" id="dashCogsProd">$0</div>
+<div class="k">COGS% vs Food+NA Net</div><div class="v" id="dashCogsPct">—</div>
+</div>
+<div class="row">
+<button class="btn" id="btnGoCount" type="button">Start Counting</button>
+<button class="btn ghost" id="btnGoInvoices" type="button">Enter Invoices</button>
+</div>
+</div>
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title">Exceptions</div>
+<div class="card-sub">Stuff that will wreck your numbers</div>
+</div>
+</div>
+<div class="list" id="dashExceptions"></div>
+<div class="row">
+<button class="btn ghost" id="btnFixExceptions" type="button">Review in Reports</button>
+</div>
+</div>
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title">Quick Add Item</div>
+<div class="card-sub">For “we just bought this” or “why is this here?”</div>
+</div>
+</div>
+<div class="form">
+<label>Name <input class="input" id="qaName" placeholder="e.g., Sriracha 17oz"/></label>
+<div class="row">
+<label class="grow">Group
+                <select class="select" id="qaGroup">
+<option value="ingredients">Ingredients</option>
+<option value="products">Products</option>
+<option value="nonfood">Nonfood</option>
+<option value="batch">Batch (auto)</option>
+</select>
+</label>
+<label class="grow">Category <input class="input" id="qaCategory" placeholder="protein / dairy / paper / sauces..."/></label>
+</div>
+<div class="row">
+<label class="grow">Base Unit
+                <select class="select" id="qaBaseUnit">
+<option>ea</option><option>lb</option><option>oz</option><option>qt</option><option>gal</option><option>pan</option><option>case</option>
+</select>
+</label>
+<label class="grow">Units/Case <input class="input" id="qaUnitsPerCase" inputmode="decimal" placeholder="e.g., 6"/></label>
+<label class="grow">Default Cost <input class="input" id="qaCost" inputmode="decimal" placeholder="e.g., 5.99"/></label>
+</div>
+<button class="btn" id="btnQuickAdd" type="button">Add Item</button>
+<div class="hint">Tip: You can refine units later per section (Dry vs Line) on the Counting tab.</div>
+</div>
+</div>
+<div class="card span-3">
+<div class="card-h">
+<div>
+<div class="card-title">Variance Heat Map</div>
+<div class="card-sub">Fast anomaly scan: biggest movements by $ (begin + purchases − end)</div>
+</div>
+<span class="pill purple">Best-effort</span>
+</div>
+<div class="list" id="dashHeatList"></div>
+<div class="row">
+<button class="btn ghost" id="btnDashHeatOpenReports" type="button">Open Reports</button>
+</div>
+</div>
+</div>
+</section>
+<!-- COUNTING -->
+<section class="panel" id="panel-counting">
+<div class="grid2">
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title">Kitchen Map</div>
+<div class="card-sub">Discovery Mode: build as you walk</div>
+</div>
+<button class="btn ghost" id="btnNewLocation" type="button">+ Location</button>
+</div>
+<div class="list" id="locationsList"></div>
+</div>
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title" id="sectionTitle">Section</div>
+<div class="card-sub" id="sectionSub">Pick a section to count</div>
+</div>
+<div class="row">
+<button class="btn ghost" disabled="" id="btnNewSection" type="button">+ Section</button>
+<button class="btn" disabled="" id="btnStartWalk" type="button">Walk Count</button>
+</div>
+</div>
+<div class="list" id="sectionsList"></div>
+<div class="divider"></div>
+<div class="row">
+<input class="input grow" disabled="" id="addToSectionSearch" placeholder="Add item to this section (search…)"/>
+<button class="btn ghost" disabled="" id="btnAddToSection" type="button">Add</button>
+</div>
+<div class="hint">Adds to the end of the section path (sheet → shelf). Drag reorder comes later; v8 learns the order you add them.</div>
+<div class="divider"></div>
+<div class="notes-dock">
+<div class="notes-h">
+<div>
+<div class="card-title">Running Notes</div>
+<div class="card-sub">Persistent during counting (stash / weird items / transfers)</div>
+</div>
+<button class="btn ghost" id="btnClearNotes" type="button">Clear</button>
+</div>
+<textarea class="textarea" id="runningNotes" placeholder="Example: O'Keefe stashed 2 bags of shrimp behind pastry boxes. Also found 1 weird mayo bucket not on list."></textarea>
+<div class="row">
+<button class="btn ghost" id="btnAddFinding" type="button">Save as Finding</button>
+<span class="hint grow" id="findingHint">Findings show up in Reports → Findings Queue</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Walkthrough overlay -->
+<div aria-modal="true" class="overlay hidden" id="walkOverlay" role="dialog"><h1>Devin O’Rourke</h1><h2>Product Systems Engineer — decision systems &amp; UX tooling</h2><p>Tap anywhere to enter</p></div>
+</section>
+<!-- INVOICES -->
+<section class="panel" id="panel-invoices">
+<div class="grid2">
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title">Invoices</div>
+<div class="card-sub">Card-style entry • fast on mobile</div>
+</div>
+<button class="btn" id="btnNewInvoice" type="button">+ New Invoice</button>
+</div>
+<div class="list" id="invoiceList"></div>
+</div>
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title" id="invoiceEditorTitle">Invoice Editor</div>
+<div class="card-sub" id="invoiceEditorSub">Create or select an invoice</div>
+</div>
+<div class="row">
+<button class="btn ghost" disabled="" id="btnDuplicateInvoice" type="button">Duplicate</button>
+<button class="btn ghost" disabled="" id="btnDeleteInvoice" type="button">Delete</button>
+</div>
+</div>
+<div class="form" id="invoiceEditor"></div>
+<!-- Paste-many modal -->
+<div aria-modal="true" class="overlay hidden" id="pasteModal" role="dialog"><h1>Devin O’Rourke</h1><h2>Product Systems Engineer — decision systems &amp; UX tooling</h2><p>Tap anywhere to enter</p></div>
+</div>
+</div>
+</section>
+<!-- RECIPES -->
+<section class="panel" id="panel-recipes">
+<div class="grid2">
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title">Recipes</div>
+<div class="card-sub">Portion + Batch (batch auto-shows as inventory item)</div>
+</div>
+<div class="row">
+<button class="btn" id="btnNewPortion" type="button">+ Portion</button>
+<button class="btn ghost" id="btnNewBatch" type="button">+ Batch</button>
+</div>
+</div>
+<div class="row">
+<button class="chip active" data-recipe-filter="portion" type="button">Portion</button>
+<button class="chip" data-recipe-filter="batch" type="button">Batch</button>
+</div>
+<div class="list" id="recipeList"></div>
+</div>
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title" id="recipeEditorTitle">Recipe Editor</div>
+<div class="card-sub" id="recipeEditorSub">Create or select a recipe</div>
+</div>
+<div class="row">
+<button class="btn ghost" disabled="" id="btnDeleteRecipe" type="button">Delete</button>
+</div>
+</div>
+<div class="form" id="recipeEditor"></div>
+</div>
+</div>
+</section>
+<!-- REPORTS -->
+<section class="panel" id="panel-reports">
+<div class="grid">
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title">COGS Summary</div>
+<div class="card-sub">Actual COGS (Begin + Purchases − End)</div>
+</div>
+<div class="row">
+<button class="btn ghost" id="btnRecalc" type="button">Recalc</button>
+<button class="btn" id="btnExportMonthZip" type="button">Export Month ZIP</button>
+</div>
+</div>
+<div class="kv">
+<div class="k">Begin (Ingredients)</div><div class="v" id="repBeginIng">$0</div>
+<div class="k">Purchases (Ingredients)</div><div class="v" id="repPurchIng">$0</div>
+<div class="k">End (Ingredients)</div><div class="v" id="repEndIng">$0</div>
+<div class="k">COGS (Ingredients)</div><div class="v" id="repCogsIng">$0</div>
+<div class="k">COGS% vs Food+NA Net</div><div class="v" id="repCogsPct">—</div>
+</div>
+<div class="hint">Theoretical COGS (Toast PMIX) is next module; recipes are already here.</div>
+</div>
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title">Findings Queue</div>
+<div class="card-sub">From counting notes + quick saves</div>
+</div>
+<button class="btn ghost" id="btnClearFindings" type="button">Clear</button>
+</div>
+<div class="list" id="findingsList"></div>
+</div>
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title">Unmatched Invoice Lines</div>
+<div class="card-sub">Fix these so costs &amp; categories stop being wrong</div>
+</div>
+<button class="btn ghost" id="btnResolveAll" type="button">Resolve</button>
+</div>
+<div class="list" id="unmatchedList"></div>
+</div>
+</div>
+<details class="details" id="advancedReports">
+<summary>Advanced COGS Tools &amp; Controls</summary>
+<div class="hint">Optional deeper controls (kept out of the main flow so the app stays calm during busy shifts).</div>
+<div class="grid" style="margin-top:14px;">
+<section class="card" id="cogsSection">
+<h3>COGS</h3>
+<div class="cogs-grid">
+<div class="cogs-card">
+<div class="label">Actual COGS</div>
+<div class="value" id="actualCogs">$0.00</div>
+<div class="sub">Begin + Purchases − End</div>
+</div>
+<div class="cogs-card">
+<div class="label">Theoretical COGS</div>
+<div class="value" id="theoreticalCogs">$0.00</div>
+<div class="sub">PMIX × Portion Recipes</div>
+</div>
+<div class="cogs-card">
+<div class="label">Variance</div>
+<div class="value" id="varianceCogs">$0.00</div>
+<div class="sub" id="varianceNote"></div>
+</div>
+</div>
+<div class="confidence" id="cogsConfidence"></div>
+<details class="pmix">
+<summary>PMIX (Toast) — paste CSV</summary>
+<textarea id="pmixInput" placeholder="Paste PMIX CSV here (Menu Item, Qty)"></textarea>
+<button class="btn" id="applyPmix" type="button">Apply PMIX</button>
+</details>
+</section>
+<section class="card" id="managerSection">
+<h3>Manager Actions</h3>
+<ul id="managerActions"></ul>
+</section>
+<section class="card" id="monthlySummary">
+<h3>Monthly Summary</h3>
+<div class="summary-grid">
+<div><b>Sales</b><div id="sumSales">$0.00</div></div>
+<div><b>Actual COGS</b><div id="sumActual">$0.00</div></div>
+<div><b>Theoretical COGS</b><div id="sumTheo">$0.00</div></div>
+<div><b>Variance</b><div id="sumVar">$0.00</div></div>
+</div>
+<div class="export-bar">
+<button class="btn" id="exportZip" type="button">Export ZIP (Backup)</button>
+<button class="btn" id="emailReport" type="button">Email Report (Draft)</button>
+</div>
+</section>
+<section class="card" id="periodControl">
+<h3>Period</h3>
+<div class="row">
+<div>
+<label>Inventory at start of period</label>
+<input id="beginInvInput" placeholder="Enter beginning inventory value" type="number"/>
+<button class="btn" id="confirmBeginInv" type="button">Confirm</button>
+<small class="muted" id="beginInvStatus"></small>
+</div>
+</div>
+<div class="row">
+<button class="btn" id="lockPeriod" type="button">Lock Period</button>
+<span class="muted" id="periodStatus"></span>
+</div>
+</section>
+</div>
+</details>
+</section>
+<!-- SETTINGS -->
+<section class="panel" id="panel-settings">
+<div class="grid">
+<div class="card">
+<div class="card-h">
+<div>
+<div class="card-title">Settings</div>
+<div class="card-sub">Single kitchen • Auto theme • Purple accent</div>
+</div>
+</div>
+<div class="form">
+<label>Report Email (one address)
+              <input class="input" id="setReportEmail" placeholder="devin.dev.portfolio@gmail.com"/>
+</label>
+<div class="row">
+<button class="btn" id="btnSaveSettings" type="button">Save</button>
+<button class="btn ghost" id="btnResetSeed" type="button">Reset App Data</button>
+</div>
+<div class="divider"></div>
+<details class="details">
+<summary>About this build</summary>
+<div class="hint">
+<p><b>v8</b> is the first build where the UI is card-style end-to-end (invoices, counting, recipes, reports).</p>
+<p>ZIP exports use JSZip. If you’re offline and JSZip can’t load, the app falls back to exporting JSON + CSV as separate downloads.</p>
+</div>
+</details>
+</div>
+</div>
+<div class="card" id="settingsAdvanced">
+<div class="card-h">
+<div>
+<div class="card-title">Advanced</div>
+<div class="card-sub">Aliases, normalization, and power controls.</div>
+</div>
+</div>
+<details class="details"><summary>Item setup (advanced)</summary><section class="card" id="itemFormalization">
+<h3>Item setup</h3>
+<div id="itemList"></div>
+</section></details>
+</div>
+</div>
+</section>
+<div class="modal" id="aliasModal">
+<div class="modal-card">
+<h4>Item Aliases</h4>
+<div id="aliasList"></div>
+<input id="newAlias" placeholder="Add alias"/>
+<div class="actions">
+<button class="btn" id="addAlias" type="button">Add</button>
+<button class="btn" id="closeAlias" type="button">Close</button>
+</div>
+</div>
+</div>
+<section class="panel hidden" id="panel-periods">
+<div class="tile">
+<h2>Accounting Periods</h2>
+<div id="periodList"></div>
+<hr/>
+<div class="row">
+<label class="grow">Start Date<input id="newPeriodStart" type="date"/></label>
+<label class="grow">End Date<input id="newPeriodEnd" type="date"/></label>
+<button class="primary" id="btnCreatePeriod">Create Period</button>
+</div>
+</div>
+</section>
+<section class="panel" hidden="" id="reports">
+<div class="tile">
+<h2>Reports &amp; Exports</h2>
+<div class="grid">
+<button class="btn primary" id="expCsv">Export CSV</button>
+<button class="btn" id="expZip">Export ZIP</button>
+<button class="btn" id="expEmail">Email Reports</button>
+</div>
+<p class="muted">Exports include inventory, invoices, counts, and summaries for the active period.</p>
+</div>
+</section>
+<section id="case-study" style="padding: 18px 16px; max-width: 980px; margin: 0 auto;">
+<h2 style="margin:0 0 8px;">Case Study — Alibi — Logged &amp; Verified</h2>
+<p style="margin:0; opacity:0.9; line-height:1.6;">
+    Short skim first. Then the medium story. Deep dive if you want the mechanics.
+  </p>
+<div style="border:1px solid rgba(255,255,255,0.18); border-radius:14px; padding:14px; margin-top:12px;">
+<h3 style="margin:0 0 6px;">Skim (30–45 sec)</h3>
+<ul style="margin:0; padding-left:18px; line-height:1.75; opacity:0.93;">
+<li><strong>Broken frame:</strong> Inventory is treated as a static list.</li>
+<li><strong>Why it fails:</strong> Real inventory is messy: drift, shortcuts, lagging paperwork, mislabeled items.</li>
+<li><strong>Reframe:</strong> Inventory is a state machine with uncertain provenance.</li>
+<li><strong>System:</strong> Transition-first tracking + anomaly visibility + confidence (trust gradients).</li>
+<li><strong>Signal:</strong> I model reality instead of forcing fiction into a spreadsheet.</li>
+</ul>
+</div>
+<div style="border:1px solid rgba(255,255,255,0.18); border-radius:14px; padding:14px; margin-top:12px;">
+<h3 style="margin:0 0 6px;">Medium (2–3 min)</h3>
+<p style="margin:10px 0 0; opacity:0.92; line-height:1.65;">Most inventory systems collapse the world into counts and pretend the record is truth. In real ops, the record is often a hypothesis.</p>
+<p style="margin:10px 0 0; opacity:0.92; line-height:1.65;">Alibi treats changes as events (transitions), not just totals. It’s designed to surface what’s unverified, what’s suspicious, and what’s known — so you can recover trust instead of losing it.</p>
+<p style="margin:10px 0 0; opacity:0.92; line-height:1.65;">This is failure-aware design applied to operational truth: represent the mess, don’t punish the user for it.</p>
+<div style="margin-top:12px;">
+<a href="../../case-studies/alibi.html" style="text-decoration:none; border:1px solid rgba(255,255,255,0.22); padding:8px 10px; border-radius:10px; display:inline-block;">Deep dive →</a>
+</div>
+</div>
+</section>
+</main>
+<!-- PHASE5_REPORTS -->
+<!-- JSZip (CDN) -->
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script defer="defer" src="/shared/global-polyfill.js?v=7"></script>
+<script defer="defer" src="/shared/appdata-client.js?v=1"></script>
+<script defer="defer" src="app.js"></script>
+<!-- removed missing script src: /shared/global-polyfill.js?v=20260108 -->
+<!-- removed missing script src: /shared/state-store.js?v=20260108 -->
+<!-- removed missing script src: /shared/telemetry-hub.js?v=20260108 -->
+<!-- removed missing script src: /shared/ai-router.js?v=20260108 -->
+<style>
+  .nxFloatingHelp{position:fixed;right:14px;bottom:14px;z-index:9999}
+  .nxFloatingHelp a{display:inline-block;padding:10px 12px;border-radius:999px;
+    background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.35);
+    color:#e5e7eb;text-decoration:none;font-family:system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:13px;backdrop-filter: blur(10px)}
+  .nxFloatingHelp a:hover{transform: translateY(-1px)}
+
+
+/* ===== Phase 4: Accessibility, Contrast, & Perception ===== */
+/* Kill default shiny-blue links globally (unless explicitly styled) */
+a:link, a:visited{
+  color: rgba(255,255,255,0.92);
+  text-decoration-color: rgba(255,255,255,0.35);
+}
+a:hover{
+  color: rgba(255,255,255,0.98);
+  text-decoration-color: rgba(155,209,255,0.70);
+}
+a:active{
+  color: rgba(255,255,255,1);
+}
+
+/* If something is intended to look like a button, it should feel like one */
+a.btn, a.buttonlike, .nxs-btn, .nxs-pill, .pillBtn, button, [role="button"]{
+  text-decoration: none !important;
+}
+
+/* Keyboard: always visible focus, never the default outline that disappears on dark backgrounds */
+:focus-visible{
+  outline: 2px solid rgba(155,209,255,0.85);
+  outline-offset: 4px;
+}
+
+/* Increase tap target comfort on mobile */
+a, button{
+  -webkit-tap-highlight-color: rgba(155,209,255,0.25);
+}
+
+
+/* ===== Phase 5: Performance, SEO, & Production Paranoia ===== */
+/* Reduce layout shift from images */
+img{ height:auto; }
+
+
+
+/* ===== Phase B: Layout Shield (local app wins over global card polish) ===== */
+body[data-app="alibi"] .card{ transform:none !important; }
+body[data-app="alibi"] .card:hover{ transform:none !important; }
+</style>
+<div class="nxFloatingHelp"><a href="/althea/alibi/">Ask Althea (offline Q&amp;A)</a></div>
+<script defer="" src="/shared/runtime-load-guard.js"></script>
+<script defer="" src="/shared/render-recovery-guard.js"></script>
+<script defer="" src="/shared/resize-dpr-guard.js"></script>
+<script defer="" src="/shared/error-boundary-guard.js"></script>
+<script defer="" src="/shared/state-init-guard.js"></script>
+<script defer="" src="/shared/scroll-focus-guard.js"></script>
+<script defer="" src="/shared/ui-physics-guard.js"></script>
+<script defer="defer" src="/shared/nexus-topnav-v2.js?v=54"></script>
+</body>
+</html>
