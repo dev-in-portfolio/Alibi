@@ -5,31 +5,21 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="#070A12" name="theme-color"/>
-<meta content="Interactive product builds in the Nexus suite." name="description"/>
+<meta content="Kitchen inventory, invoice capture, recipe costing, and COGS reporting for restaurant teams." name="description"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-<meta content="Alibi — Logged &amp; Verified — Devin O’Rourke" property="og:title"/>
-<meta content="Interactive product builds in the Nexus suite." property="og:description"/>
+<meta content="Alibi — Logged &amp; Verified" property="og:title"/>
+<meta content="Kitchen inventory, invoice capture, recipe costing, and COGS reporting for restaurant teams." property="og:description"/>
 <meta content="website" property="og:type"/>
-<meta content="https://dev-in-portfolio.netlify.app/apps/alibi/" property="og:url"/>
-<meta content="https://dev-in-portfolio.netlify.app/assets/og.svg" property="og:image"/>
+<meta content="/" property="og:url"/>
 <meta content="summary_large_image" name="twitter:card"/>
-<meta content="Alibi — Logged &amp; Verified — Devin O’Rourke" name="twitter:title"/>
-<meta content="Interactive product builds in the Nexus suite." name="twitter:description"/>
-<meta content="https://dev-in-portfolio.netlify.app/assets/og.svg" name="twitter:image"/>
-<title>Alibi — Logged &amp; Verified — Devin O’Rourke</title>
-<link href="/shared/tokens.css" rel="stylesheet"/><link href="/shared/nexus-topnav-v2.css?v=54" rel="stylesheet"/>
-<script defer="" src="/shared/toast.js"></script>
+<meta content="Alibi — Logged &amp; Verified" name="twitter:title"/>
+<meta content="Kitchen inventory, invoice capture, recipe costing, and COGS reporting for restaurant teams." name="twitter:description"/>
+<title>Alibi — Logged &amp; Verified</title>
 <link href="styles.css" rel="stylesheet"/>
 <script>window.APP_ID="alibi-logged-verified";</script>
-<link href="/manifest.webmanifest" rel="manifest"/><link href="https://dev-in-portfolio.netlify.app/apps/alibi/" rel="canonical"><link href="/icon-192.png" rel="icon"/><script src="/runtime-guard.js"></script>
-<link href="/shared/tile-polish.css" rel="stylesheet"/>
-<link href="/shared/tap-physics.css" rel="stylesheet"/>
-<link href="/shared/ui-physics.css" rel="stylesheet"/>
 </link></head>
 <body data-app="alibi">
-  <nav class="nxTopNav"></nav>
-
 <header class="topbar dropdown-topbar">
 <div class="menu-title">Alibi — Logged &amp; Verified</div>
 </header>
@@ -39,42 +29,35 @@
 <button class="tile-nav-btn" data-goto-tab="invoices" type="button">Invoices</button>
 <button class="tile-nav-btn" data-goto-tab="recipes" type="button">Recipes</button>
 <button class="tile-nav-btn" data-goto-tab="reports" type="button">Reports</button>
- · </nav>
+</nav>
 <section aria-label="Kitchen Inventory" class="module-tile">
-<div aria-live="polite" class="save-status" id="saveStatus">
-<span class="dot"></span><span class="label">Saved</span>
-</div>
 <div class="mt-top">
 <div class="mt-brand">
 <div class="brand">
 <div aria-hidden="true" class="logo-dot"></div>
+<div class="brand-copy">
+<div class="brand-title">Kitchen Inventory</div>
+<div class="brand-sub">Built for fast shift workflow</div>
+</div>
 </div>
 <div class="mt-actions">
 <div class="top-actions">
+<div class="action-month">
 <select class="select" id="monthSelect" title="Month"></select>
+</div>
+<div class="action-buttons">
 <button class="btn ghost" id="btnNewMonth" title="Create month" type="button">+ Month</button>
 <button class="btn ghost" id="btnExportBackup" title="Export full backup JSON" type="button">Export</button>
 <button class="btn ghost" id="btnImportBackup" title="Import backup JSON" type="button">Import</button>
+<div aria-live="polite" class="save-status" id="saveStatus">
+<span class="dot"></span><span class="label">Saved</span>
+</div>
+</div>
 <input accept="application/json" hidden="" id="importFile" type="file"/>
 </div>
 </div>
 </div>
-<div class="mt-quick">
-<div class="invoice-speedbar">
-<label class="switch">
-<input id="quickEntryToggle" type="checkbox"/>
-<span class="slider"></span>
-</label>
-<span class="qe-label">Quick Entry</span>
-<div class="vendor-chips" id="vendorChips"></div>
-</div>
-<div class="mt-tabs">
-</div>
-</div></div></section>
-<div class="context-bar">
-<div class="breadcrumb" id="breadcrumb">Home</div>
-<div class="progress" id="progress">Ready</div>
-</div>
+</div></section>
 <main class="main" id="main">
 <!-- DASHBOARD -->
 <section class="panel active" id="panel-dashboard">
@@ -211,7 +194,7 @@
 <input class="input grow" disabled="" id="addToSectionSearch" placeholder="Add item to this section (search…)"/>
 <button class="btn ghost" disabled="" id="btnAddToSection" type="button">Add</button>
 </div>
-<div class="hint">Adds to the end of the section path (sheet → shelf). Drag reorder comes later; v8 learns the order you add them.</div>
+<div class="hint">Adds to the end of the section path (sheet → shelf). Drag reorder comes later; Alibi learns the order you add items.</div>
 <div class="divider"></div>
 <div class="notes-dock">
 <div class="notes-h">
@@ -230,7 +213,7 @@
 </div>
 </div>
 <!-- Walkthrough overlay -->
-<div aria-modal="true" class="overlay hidden" id="walkOverlay" role="dialog"><h1>Devin O’Rourke</h1><h2>Product Systems Engineer — decision systems &amp; UX tooling</h2><p>Tap anywhere to enter</p></div>
+<div aria-modal="true" class="overlay hidden" id="walkOverlay" role="dialog"><h1>Alibi</h1><h2>Kitchen inventory workflow</h2><p>Tap anywhere to enter</p></div>
 </section>
 <!-- INVOICES -->
 <section class="panel" id="panel-invoices">
@@ -258,7 +241,7 @@
 </div>
 <div class="form" id="invoiceEditor"></div>
 <!-- Paste-many modal -->
-<div aria-modal="true" class="overlay hidden" id="pasteModal" role="dialog"><h1>Devin O’Rourke</h1><h2>Product Systems Engineer — decision systems &amp; UX tooling</h2><p>Tap anywhere to enter</p></div>
+<div aria-modal="true" class="overlay hidden" id="pasteModal" role="dialog"><h1>Alibi</h1><h2>Invoice line entry</h2><p>Tap anywhere to enter</p></div>
 </div>
 </div>
 </section>
@@ -341,7 +324,7 @@
 </div>
 </div>
 <details class="details" id="advancedReports">
-<summary>Advanced COGS Tools &amp; Controls</summary>
+<summary>COGS Tools &amp; Controls</summary>
 <div class="hint">Optional deeper controls (kept out of the main flow so the app stays calm during busy shifts).</div>
 <div class="grid" style="margin-top:14px;">
 <section class="card" id="cogsSection">
@@ -412,12 +395,12 @@
 <div class="card-h">
 <div>
 <div class="card-title">Settings</div>
-<div class="card-sub">Single kitchen • Auto theme • Purple accent</div>
+<div class="card-sub">Kitchen settings and data controls</div>
 </div>
 </div>
 <div class="form">
 <label>Report Email (one address)
-              <input class="input" id="setReportEmail" placeholder="devin.dev.portfolio@gmail.com"/>
+              <input class="input" id="setReportEmail" placeholder="ops@example.com"/>
 </label>
 <div class="row">
 <button class="btn" id="btnSaveSettings" type="button">Save</button>
@@ -425,10 +408,10 @@
 </div>
 <div class="divider"></div>
 <details class="details">
-<summary>About this build</summary>
+<summary>About Alibi</summary>
 <div class="hint">
-<p><b>v8</b> is the first build where the UI is card-style end-to-end (invoices, counting, recipes, reports).</p>
-<p>ZIP exports use JSZip. If you’re offline and JSZip can’t load, the app falls back to exporting JSON + CSV as separate downloads.</p>
+<p>Alibi is designed for fast kitchen workflows across counting, invoices, recipes, and reporting.</p>
+<p>ZIP exports use JSZip. If JSZip cannot load, exports fall back to separate JSON and CSV downloads.</p>
 </div>
 </details>
 </div>
@@ -436,11 +419,11 @@
 <div class="card" id="settingsAdvanced">
 <div class="card-h">
 <div>
-<div class="card-title">Advanced</div>
-<div class="card-sub">Aliases, normalization, and power controls.</div>
+<div class="card-title">Item Setup</div>
+<div class="card-sub">Aliases and item controls.</div>
 </div>
 </div>
-<details class="details"><summary>Item setup (advanced)</summary><section class="card" id="itemFormalization">
+<details class="details"><summary>Item setup</summary><section class="card" id="itemFormalization">
 <h3>Item setup</h3>
 <div id="itemList"></div>
 </section></details>
@@ -458,74 +441,12 @@
 </div>
 </div>
 </div>
-<section class="panel hidden" id="panel-periods">
-<div class="tile">
-<h2>Accounting Periods</h2>
-<div id="periodList"></div>
-<hr/>
-<div class="row">
-<label class="grow">Start Date<input id="newPeriodStart" type="date"/></label>
-<label class="grow">End Date<input id="newPeriodEnd" type="date"/></label>
-<button class="primary" id="btnCreatePeriod">Create Period</button>
-</div>
-</div>
-</section>
-<section class="panel" hidden="" id="reports">
-<div class="tile">
-<h2>Reports &amp; Exports</h2>
-<div class="grid">
-<button class="btn primary" id="expCsv">Export CSV</button>
-<button class="btn" id="expZip">Export ZIP</button>
-<button class="btn" id="expEmail">Email Reports</button>
-</div>
-<p class="muted">Exports include inventory, invoices, counts, and summaries for the active period.</p>
-</div>
-</section>
-<section id="case-study" style="padding: 18px 16px; max-width: 980px; margin: 0 auto;">
-<h2 style="margin:0 0 8px;">Case Study — Alibi — Logged &amp; Verified</h2>
-<p style="margin:0; opacity:0.9; line-height:1.6;">
-    Short skim first. Then the medium story. Deep dive if you want the mechanics.
-  </p>
-<div style="border:1px solid rgba(255,255,255,0.18); border-radius:14px; padding:14px; margin-top:12px;">
-<h3 style="margin:0 0 6px;">Skim (30–45 sec)</h3>
-<ul style="margin:0; padding-left:18px; line-height:1.75; opacity:0.93;">
-<li><strong>Broken frame:</strong> Inventory is treated as a static list.</li>
-<li><strong>Why it fails:</strong> Real inventory is messy: drift, shortcuts, lagging paperwork, mislabeled items.</li>
-<li><strong>Reframe:</strong> Inventory is a state machine with uncertain provenance.</li>
-<li><strong>System:</strong> Transition-first tracking + anomaly visibility + confidence (trust gradients).</li>
-<li><strong>Signal:</strong> I model reality instead of forcing fiction into a spreadsheet.</li>
-</ul>
-</div>
-<div style="border:1px solid rgba(255,255,255,0.18); border-radius:14px; padding:14px; margin-top:12px;">
-<h3 style="margin:0 0 6px;">Medium (2–3 min)</h3>
-<p style="margin:10px 0 0; opacity:0.92; line-height:1.65;">Most inventory systems collapse the world into counts and pretend the record is truth. In real ops, the record is often a hypothesis.</p>
-<p style="margin:10px 0 0; opacity:0.92; line-height:1.65;">Alibi treats changes as events (transitions), not just totals. It’s designed to surface what’s unverified, what’s suspicious, and what’s known — so you can recover trust instead of losing it.</p>
-<p style="margin:10px 0 0; opacity:0.92; line-height:1.65;">This is failure-aware design applied to operational truth: represent the mess, don’t punish the user for it.</p>
-<div style="margin-top:12px;">
-<a href="../../case-studies/alibi.html" style="text-decoration:none; border:1px solid rgba(255,255,255,0.22); padding:8px 10px; border-radius:10px; display:inline-block;">Deep dive →</a>
-</div>
-</div>
-</section>
 </main>
 <!-- PHASE5_REPORTS -->
 <!-- JSZip (CDN) -->
 <script defer="defer" src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-<script defer="defer" src="/shared/global-polyfill.js?v=7"></script>
-<script defer="defer" src="/shared/appdata-client.js?v=1"></script>
 <script defer="defer" src="app.js"></script>
-<!-- removed missing script src: /shared/global-polyfill.js?v=20260108 -->
-<!-- removed missing script src: /shared/state-store.js?v=20260108 -->
-<!-- removed missing script src: /shared/telemetry-hub.js?v=20260108 -->
-<!-- removed missing script src: /shared/ai-router.js?v=20260108 -->
 <style>
-  .nxFloatingHelp{position:fixed;right:14px;bottom:14px;z-index:9999}
-  .nxFloatingHelp a{display:inline-block;padding:10px 12px;border-radius:999px;
-    background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.35);
-    color:#e5e7eb;text-decoration:none;font-family:system-ui,-apple-system,Segoe UI,sans-serif;
-    font-size:13px;backdrop-filter: blur(10px)}
-  .nxFloatingHelp a:hover{transform: translateY(-1px)}
-
-
 /* ===== Phase 4: Accessibility, Contrast, & Perception ===== */
 /* Kill default shiny-blue links globally (unless explicitly styled) */
 a:link, a:visited{
@@ -567,14 +488,6 @@ img{ height:auto; }
 body[data-app="alibi"] .card{ transform:none !important; }
 body[data-app="alibi"] .card:hover{ transform:none !important; }
 </style>
-<div class="nxFloatingHelp"><a href="/althea/alibi/">Ask Althea (offline Q&amp;A)</a></div>
-<script defer="" src="/shared/runtime-load-guard.js"></script>
-<script defer="" src="/shared/render-recovery-guard.js"></script>
-<script defer="" src="/shared/resize-dpr-guard.js"></script>
-<script defer="" src="/shared/error-boundary-guard.js"></script>
-<script defer="" src="/shared/state-init-guard.js"></script>
-<script defer="" src="/shared/scroll-focus-guard.js"></script>
-<script defer="" src="/shared/ui-physics-guard.js"></script>
-<script defer="defer" src="/shared/nexus-topnav-v2.js?v=54"></script>
+<div aria-live="polite" class="toast hidden" id="toast"></div>
 </body>
 </html>
