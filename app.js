@@ -679,6 +679,21 @@ function renderVendorChips(vendor){
     $("#importFile")?.click();
   });
 
+  $("#btnLoadDemoTour")?.addEventListener("click", () => {
+    const ok = confirm("Load sample kitchen data and start the guided tour? This replaces current local data on this device.");
+    if(!ok) return;
+    db = buildDemoData();
+    window.__ALIBI_DB__ = db;
+    currentMonthId = db.months[0]?.id || null;
+    currentLocationId = db.kitchen.locations[0]?.id || null;
+    currentSectionId = db.kitchen.locations[0]?.sections?.[0]?.id || null;
+    currentInvoiceId = db.invoices[0]?.id || null;
+    currentRecipeId = db.recipes[0]?.id || null;
+    saveDB();
+    renderAll();
+    startGuidedTour();
+  });
+
   $("#importFile")?.addEventListener("change", async (e) => {
     const f = e.target.files?.[0];
     if(!f) return;
@@ -2334,6 +2349,229 @@ function renderVendorChips(vendor){
   }
   function safeFile(s){
     return String(s||"").replace(/[^a-z0-9]+/gi,"_").replace(/^_+|_+$/g,"").toLowerCase();
+  }
+
+  function buildDemoData(){
+    const now = new Date();
+    const cur = new Date(now.getFullYear(), now.getMonth(), 1);
+    const prev = new Date(now.getFullYear(), now.getMonth()-1, 1);
+    const monthLabel = (d) => d.toLocaleString(undefined, { month: "long" }) + " " + d.getFullYear();
+    const mkItem = (name, group, category, baseUnit, defaultCost, unitsPerCase=0) => ({ id: uid(), name, group, category, baseUnit, unitsPerCase, defaultCost, aliases: [] });
+
+    const items = [
+      mkItem("Chicken Thigh","ingredients","protein","lb",2.95),
+      mkItem("Ground Beef","ingredients","protein","lb",4.15),
+      mkItem("Salmon Fillet","ingredients","protein","lb",8.8),
+      mkItem("Roma Tomato","ingredients","produce","lb",1.18),
+      mkItem("Romaine Hearts","ingredients","produce","ea",1.05),
+      mkItem("Yellow Onion","ingredients","produce","lb",0.85),
+      mkItem("Olive Oil","ingredients","oil","qt",8.6),
+      mkItem("Canola Oil","ingredients","oil","qt",6.1),
+      mkItem("Garlic Puree","ingredients","sauce","qt",4.25),
+      mkItem("Burger Bun","products","bread","ea",0.41,48),
+      mkItem("Ciabatta Roll","products","bread","ea",0.52,36),
+      mkItem("French Fries","products","frozen","lb",1.62),
+      mkItem("Takeout Box","nonfood","packaging","ea",0.21,200),
+      mkItem("Soup Cup 16oz","nonfood","packaging","ea",0.14,250),
+      mkItem("Nitrile Gloves","nonfood","sanitation","ea",0.08,1000),
+      mkItem("House Marinara","batch","sauce","qt",5.4),
+      mkItem("Pickled Onions","batch","prep","qt",2.9),
+      mkItem("Lemon Herb Aioli","batch","sauce","qt",4.8)
+    ];
+    const byName = Object.fromEntries(items.map(i => [i.name, i]));
+    byName["Roma Tomato"].aliases.push("tomatoes");
+    byName["Ground Beef"].aliases.push("beef grind");
+    byName["French Fries"].aliases.push("fries");
+
+    const curMonth = { id: uid(), label: monthLabel(cur), year: cur.getFullYear(), month: cur.getMonth()+1, sales:{foodNet:52840,totalNet:61820}, begin:{}, purchases:[], end:{counts:{}} };
+    const prevMonth = { id: uid(), label: monthLabel(prev), year: prev.getFullYear(), month: prev.getMonth()+1, sales:{foodNet:48710,totalNet:57140}, begin:{}, purchases:[], end:{counts:{}} };
+    const curMonthId = curMonth.id;
+    const prevMonthId = prevMonth.id;
+    const setCount = (m, name, qty, unit) => { m.end.counts[byName[name].id] = { qty, unit: unit || byName[name].baseUnit }; };
+
+    setCount(prevMonth,"Chicken Thigh",78,"lb"); setCount(curMonth,"Chicken Thigh",61,"lb");
+    setCount(prevMonth,"Ground Beef",64,"lb"); setCount(curMonth,"Ground Beef",52,"lb");
+    setCount(prevMonth,"Salmon Fillet",25,"lb"); setCount(curMonth,"Salmon Fillet",19,"lb");
+    setCount(prevMonth,"Roma Tomato",52,"lb"); setCount(curMonth,"Roma Tomato",41,"lb");
+    setCount(prevMonth,"Romaine Hearts",24,"ea"); setCount(curMonth,"Romaine Hearts",17,"ea");
+    setCount(prevMonth,"Yellow Onion",34,"lb"); setCount(curMonth,"Yellow Onion",21,"lb");
+    setCount(prevMonth,"Olive Oil",14,"qt"); setCount(curMonth,"Olive Oil",10,"qt");
+    setCount(prevMonth,"Canola Oil",22,"qt"); setCount(curMonth,"Canola Oil",16,"qt");
+    setCount(prevMonth,"Garlic Puree",8,"qt"); setCount(curMonth,"Garlic Puree",6,"qt");
+    setCount(prevMonth,"Burger Bun",230,"ea"); setCount(curMonth,"Burger Bun",188,"ea");
+    setCount(prevMonth,"Ciabatta Roll",122,"ea"); setCount(curMonth,"Ciabatta Roll",89,"ea");
+    setCount(prevMonth,"French Fries",140,"lb"); setCount(curMonth,"French Fries",102,"lb");
+    setCount(prevMonth,"Takeout Box",410,"ea"); setCount(curMonth,"Takeout Box",275,"ea");
+    setCount(prevMonth,"Soup Cup 16oz",510,"ea"); setCount(curMonth,"Soup Cup 16oz",342,"ea");
+    setCount(prevMonth,"House Marinara",11,"qt"); setCount(curMonth,"House Marinara",7,"qt");
+    setCount(prevMonth,"Pickled Onions",8,"qt"); setCount(curMonth,"Pickled Onions",5,"qt");
+    setCount(prevMonth,"Lemon Herb Aioli",6,"qt"); setCount(curMonth,"Lemon Herb Aioli",4,"qt");
+
+    const mkLine = (name, qty, unit, unitCost, group, category, matched=true, notes="") => ({
+      id: uid(), rawName: name, itemId: matched ? byName[name]?.id || null : null, qty, unit, unitCost, group, category, notes
+    });
+    const mkInv = (vendor, number, lines, notes="") => ({
+      id: uid(), monthId: curMonthId, vendor, number, date: nowISO(), notes, createdAt: new Date().toISOString(), lines
+    });
+    const invoices = [
+      mkInv("US Foods","US-44812",[mkLine("Chicken Thigh",96,"lb",2.82,"ingredients","protein"),mkLine("Ground Beef",90,"lb",4.02,"ingredients","protein"),mkLine("Burger Bun",288,"ea",0.39,"products","bread"),mkLine("Takeout Box",500,"ea",0.18,"nonfood","packaging")],"Tuesday truck"),
+      mkInv("Sysco","SY-77104",[mkLine("Olive Oil",12,"qt",8.95,"ingredients","oil"),mkLine("Canola Oil",18,"qt",5.98,"ingredients","oil"),mkLine("French Fries",140,"lb",1.56,"products","frozen"),mkLine("Soup Cup 16oz",600,"ea",0.13,"nonfood","packaging")],"Weekend load-in"),
+      mkInv("Local Produce Co","LP-1022",[mkLine("Roma Tomato",88,"lb",1.12,"ingredients","produce"),mkLine("Romaine Hearts",42,"ea",0.95,"ingredients","produce"),mkLine("Yellow Onion",70,"lb",0.79,"ingredients","produce"),mkLine("Cherry Tomato Medley",24,"lb",1.44,"ingredients","produce",false,"Needs mapping")]),
+      mkInv("Sea Hub","SH-2218",[mkLine("Salmon Fillet",38,"lb",8.52,"ingredients","protein"),mkLine("Lemon Herb Aioli",6,"qt",4.65,"batch","sauce")],"Friday fish delivery"),
+      mkInv("PrepSource","PS-9004",[mkLine("House Marinara",10,"qt",5.25,"batch","sauce"),mkLine("Pickled Onions",8,"qt",2.72,"batch","prep"),mkLine("Garlic Puree",7,"qt",4.11,"ingredients","sauce")]),
+      mkInv("Metro Wholesale","MW-3301",[mkLine("Ciabatta Roll",180,"ea",0.48,"products","bread"),mkLine("Nitrile Gloves",400,"ea",0.07,"nonfood","sanitation"),mkLine("Unknown Bread Crumbs",12,"lb",1.9,"ingredients","dry",false,"Label mismatch")])
+    ];
+
+    const recipes = [
+      { id: uid(), type:"portion", name:"Grilled Chicken Plate", yieldQty:1, yieldUnit:"portion", notes:"High runner", lines:[{id:uid(),itemId:byName["Chicken Thigh"].id,qty:0.62,unit:"lb"},{id:uid(),itemId:byName["Roma Tomato"].id,qty:0.18,unit:"lb"},{id:uid(),itemId:byName["Olive Oil"].id,qty:0.04,unit:"qt"}] },
+      { id: uid(), type:"portion", name:"Smash Burger", yieldQty:1, yieldUnit:"portion", notes:"Weekend promo", lines:[{id:uid(),itemId:byName["Ground Beef"].id,qty:0.36,unit:"lb"},{id:uid(),itemId:byName["Burger Bun"].id,qty:1,unit:"ea"},{id:uid(),itemId:byName["Lemon Herb Aioli"].id,qty:0.03,unit:"qt"}] },
+      { id: uid(), type:"portion", name:"Salmon Sandwich", yieldQty:1, yieldUnit:"portion", notes:"Lunch menu", lines:[{id:uid(),itemId:byName["Salmon Fillet"].id,qty:0.28,unit:"lb"},{id:uid(),itemId:byName["Ciabatta Roll"].id,qty:1,unit:"ea"},{id:uid(),itemId:byName["Romaine Hearts"].id,qty:0.15,unit:"ea"}] },
+      { id: uid(), type:"batch", name:"House Marinara", yieldQty:8, yieldUnit:"qt", notes:"Prep Tue/Fri", lines:[{id:uid(),itemId:byName["Roma Tomato"].id,qty:18,unit:"lb"},{id:uid(),itemId:byName["Garlic Puree"].id,qty:1.8,unit:"qt"},{id:uid(),itemId:byName["Olive Oil"].id,qty:1.2,unit:"qt"}] },
+      { id: uid(), type:"batch", name:"Pickled Onions", yieldQty:6, yieldUnit:"qt", notes:"For burgers", lines:[{id:uid(),itemId:byName["Yellow Onion"].id,qty:12,unit:"lb"}] },
+      { id: uid(), type:"batch", name:"Lemon Herb Aioli", yieldQty:5, yieldUnit:"qt", notes:"Sauce station", lines:[{id:uid(),itemId:byName["Olive Oil"].id,qty:1.5,unit:"qt"},{id:uid(),itemId:byName["Garlic Puree"].id,qty:0.8,unit:"qt"}] }
+    ];
+
+    const mkSection = (name, itemNames) => ({ id: uid(), name, itemIds: itemNames.map(n => byName[n].id), overrides: {}, _counts: {} });
+    const walkInPrep = mkSection("Prep Shelf",["Chicken Thigh","Ground Beef","Romaine Hearts","Roma Tomato","Yellow Onion","Olive Oil","Canola Oil","Garlic Puree"]);
+    const lineExpo = mkSection("Expo",["Burger Bun","Ciabatta Roll","French Fries","House Marinara","Lemon Herb Aioli","Pickled Onions"]);
+    const dryStorage = mkSection("Dry Shelf",["Takeout Box","Soup Cup 16oz","Nitrile Gloves"]);
+    [walkInPrep,lineExpo,dryStorage].forEach(sec => {
+      const sectionCounts = {};
+      sec.itemIds.forEach(id => {
+        const c = curMonth.end.counts[id];
+        if(c) sectionCounts[id] = { qty: c.qty, unit: c.unit };
+      });
+      sec._counts[curMonthId] = sectionCounts;
+    });
+
+    const kitchen = {
+      locations: [
+        { id: uid(), name: "Walk-In", sections: [walkInPrep] },
+        { id: uid(), name: "Line", sections: [lineExpo] },
+        { id: uid(), name: "Dry Storage", sections: [dryStorage] },
+        { id: uid(), name: "Freezer", sections: [mkSection("Frozen Rack",["French Fries"])] }
+      ]
+    };
+
+    return {
+      version: "v8",
+      settings: { reportEmail: "chef@demo-restaurant.com" },
+      items,
+      kitchen,
+      months: [curMonth, prevMonth],
+      invoices,
+      findings: [
+        { id: uid(), monthId: curMonthId, createdAt: new Date().toISOString(), locationName: "Walk-In", sectionName: "Prep Shelf", text: "Opened chicken case had two leaky cryovacs. Waste logged." },
+        { id: uid(), monthId: curMonthId, createdAt: new Date().toISOString(), locationName: "Line", sectionName: "Expo", text: "Aioli backup moved to lowboy and not logged at handoff." },
+        { id: uid(), monthId: curMonthId, createdAt: new Date().toISOString(), locationName: "Dry Storage", sectionName: "Dry Shelf", text: "Soup cups arrived in mixed sleeve counts; verify pack size." }
+      ],
+      recipes
+    };
+  }
+
+  let tourState = { active: false, stepIndex: 0, steps: [] };
+  function getTourSteps(){
+    return [
+      { tab: "dashboard", selector: "#panel-dashboard .dash-tiles", title: "Overview KPIs", body: "This month is preloaded so you immediately see COGS%, purchases, ending inventory, and target variance." },
+      { tab: "dashboard", selector: "#panel-dashboard #dashHeatList", title: "Variance Heat Map", body: "Top movers by dollar impact are ranked here to show where operational drift is happening." },
+      { tab: "counting", selector: "#panel-counting #locationsList", title: "Kitchen Map", body: "Demo includes full locations and sections so you can see a realistic count path.", before: () => { currentLocationId = db.kitchen.locations[0]?.id || null; } },
+      { tab: "counting", selector: "#panel-counting #sectionsList", title: "Section-Level Counts", body: "Select a section to view items that roll into month-end inventory values." },
+      { tab: "counting", selector: "#panel-counting .notes-dock", title: "Running Notes", body: "Use this to capture anomalies during live counts and send them to Findings Queue." },
+      { tab: "invoices", selector: "#panel-invoices #invoiceList", title: "Invoice Stream", body: "Several demo invoices are loaded from multiple vendors for a realistic purchasing month.", before: () => { currentInvoiceId = (db.invoices.find(i=>i.monthId===currentMonthId)||db.invoices[0])?.id || null; } },
+      { tab: "invoices", selector: "#panel-invoices #invoiceEditor", title: "Invoice Editing", body: "Open any invoice to edit lines, match products, and fix cost categories quickly." },
+      { tab: "reports", selector: "#panel-reports #unmatchedList", title: "Unmatched Items", body: "Demo intentionally includes unmatched vendor line items so this queue has real examples." },
+      { tab: "recipes", selector: "#panel-recipes #recipeList", title: "Recipe Costing", body: "Portion and batch recipes are preloaded so you can inspect cost rollups immediately.", before: () => { recipeFilter = "portion"; currentRecipeId = db.recipes.find(r=>r.type==="portion")?.id || null; } },
+      { tab: "reports", selector: "#panel-reports #cogsSection", expand: "advancedReports", title: "Actual vs Theoretical COGS", body: "This section compares inventory-driven COGS with PMIX/recipe expectations and flags confidence risks." },
+      { tab: "settings", selector: "#panel-settings .form", title: "Backup & Recovery", body: "Export backup and reset controls are here for training, migration, and incident recovery." }
+    ];
+  }
+
+  function ensureTourUI(){
+    if($("#guidedTour")) return;
+    const shell = document.createElement("div");
+    shell.id = "guidedTour";
+    shell.className = "tour-shell hidden";
+    shell.setAttribute("role", "dialog");
+    shell.setAttribute("aria-modal", "true");
+    shell.innerHTML = `
+      <div class="tour-backdrop" id="tourBackdrop"></div>
+      <div class="tour-card">
+        <div class="tour-step" id="tourStepNum">Step 1 of 1</div>
+        <h3 class="tour-title" id="tourTitle">Guided Tour</h3>
+        <p class="tour-body" id="tourBody"></p>
+        <div class="tour-actions">
+          <button class="btn ghost" id="tourPrev" type="button">Back</button>
+          <button class="btn ghost" id="tourClose" type="button">Close</button>
+          <button class="btn" id="tourNext" type="button">Next</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(shell);
+    $("#tourPrev")?.addEventListener("click", () => moveTour(-1));
+    $("#tourNext")?.addEventListener("click", () => moveTour(1));
+    $("#tourClose")?.addEventListener("click", () => stopGuidedTour());
+    $("#tourBackdrop")?.addEventListener("click", () => moveTour(1));
+    document.addEventListener("keydown", (e) => {
+      if(!tourState.active) return;
+      if(e.key === "Escape") stopGuidedTour();
+      if(e.key === "ArrowRight" || e.key === "Enter") moveTour(1);
+      if(e.key === "ArrowLeft") moveTour(-1);
+    });
+  }
+
+  function startGuidedTour(){
+    ensureTourUI();
+    tourState.steps = getTourSteps();
+    tourState.stepIndex = 0;
+    tourState.active = true;
+    document.body.classList.add("tour-active");
+    $("#guidedTour")?.classList.remove("hidden");
+    applyTourStep();
+  }
+
+  function stopGuidedTour(){
+    tourState.active = false;
+    tourState.stepIndex = 0;
+    document.body.classList.remove("tour-active");
+    $$(".tour-focus").forEach(el => el.classList.remove("tour-focus"));
+    $("#guidedTour")?.classList.add("hidden");
+  }
+
+  function moveTour(dir){
+    if(!tourState.active) return;
+    const next = tourState.stepIndex + dir;
+    if(next < 0) return;
+    if(next >= tourState.steps.length){ stopGuidedTour(); return; }
+    tourState.stepIndex = next;
+    applyTourStep();
+  }
+
+  function applyTourStep(){
+    if(!tourState.active) return;
+    const steps = tourState.steps;
+    const i = tourState.stepIndex;
+    const step = steps[i];
+    if(!step) return;
+
+    step.before?.();
+    if(step.tab) goTab(step.tab);
+    if(step.expand){
+      const details = $("#"+step.expand);
+      if(details) details.open = true;
+    }
+
+    $$(".tour-focus").forEach(el => el.classList.remove("tour-focus"));
+    const target = step.selector ? $(step.selector) : null;
+    if(target){
+      target.classList.add("tour-focus");
+      target.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    }
+
+    $("#tourStepNum").textContent = `Step ${i+1} of ${steps.length}`;
+    $("#tourTitle").textContent = step.title;
+    $("#tourBody").textContent = step.body;
+    $("#tourPrev").disabled = (i === 0);
+    $("#tourNext").textContent = (i === steps.length - 1) ? "Finish Tour" : "Next";
   }
 
   // -------- Export/Import buttons already wired --------
