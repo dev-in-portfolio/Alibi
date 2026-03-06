@@ -1658,20 +1658,32 @@ function renderVendorChips(vendor){
       if(e4) e4.textContent = endInvTotal>0 ? money(endInvTotal) : "—";
     }
 
-    // Variance vs a default target (safe heuristic; adjustable later)
+    // COGS vs goal (operator-friendly wording; avoid misleading signed deltas)
     const targetPct = 0.30;
     const targetCogs = denom>0 ? denom * targetPct : 0;
     const delta = denom>0 ? (cogsTotal - targetCogs) : 0;
+    const absDelta = Math.abs(delta);
     if($("#dashTileDeltaTargetVal")){
-      const sign = delta > 0 ? "+" : "";
-      $("#dashTileDeltaTargetVal").textContent = denom>0 ? `${sign}${money(delta)}` : "—";
+      if(denom<=0){
+        $("#dashTileDeltaTargetVal").textContent = "—";
+      }else if(absDelta < 0.005){
+        $("#dashTileDeltaTargetVal").textContent = "On Goal";
+      }else if(delta > 0){
+        $("#dashTileDeltaTargetVal").textContent = `Above Goal ${money(absDelta)}`;
+      }else{
+        $("#dashTileDeltaTargetVal").textContent = `Below Goal ${money(absDelta)}`;
+      }
     }
     if($("#dashTileDeltaTargetSub")){
       if(denom>0){
-        const over = delta > 0;
-        $("#dashTileDeltaTargetSub").textContent = over ? `Over target (${Math.round(targetPct*100)}%)` : `Under target (${Math.round(targetPct*100)}%)`;
+        if(absDelta < 0.005){
+          $("#dashTileDeltaTargetSub").textContent = `Goal ${Math.round(targetPct*100)}% of Food+NA Net`;
+        }else{
+          const state = delta > 0 ? "Needs attention" : "Good";
+          $("#dashTileDeltaTargetSub").textContent = `${state} • Goal ${Math.round(targetPct*100)}% of Food+NA Net`;
+        }
       }else{
-        $("#dashTileDeltaTargetSub").textContent = `Target ${Math.round(targetPct*100)}% COGS`;
+        $("#dashTileDeltaTargetSub").textContent = `Goal ${Math.round(targetPct*100)}% COGS`;
       }
     }
 
@@ -3113,7 +3125,7 @@ function renderVendorChips(vendor){
       target.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
     }
 
-    $("#tourStepNum").textContent = `Step ${i+1} of ${steps.length}`;
+    $("#tourStepNum").textContent = `${i+1}/${steps.length}`;
     $("#tourTitle").textContent = step.title;
     $("#tourBody").textContent = step.body;
     $("#tourPrev").disabled = (i === 0);

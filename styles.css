@@ -2270,17 +2270,17 @@ body[data-app="alibi"] .module-tile .top-actions .action-buttons #saveStatus.sav
   position: absolute;
   right: 16px;
   bottom: 16px;
-  width: min(430px, calc(100vw - 24px));
+  width: min(360px, calc(100vw - 24px));
   border: 1px solid var(--border);
   border-radius: 14px;
   background: color-mix(in srgb, var(--panel) 94%, transparent);
   box-shadow: 0 16px 36px rgba(0,0,0,0.35);
-  padding: 12px;
+  padding: 10px;
   pointer-events: auto;
 }
 
 .tour-step{
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -2289,7 +2289,7 @@ body[data-app="alibi"] .module-tile .top-actions .action-buttons #saveStatus.sav
 
 .tour-title{
   margin: 6px 0 6px;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .tour-body{
@@ -2361,7 +2361,9 @@ textarea::placeholder,
 
 /* Usability pass: faster primary actions + clearer button states */
 .main{
-  padding-bottom: 170px !important;
+  --quick-dock-space: 170px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: calc(var(--quick-dock-space) + var(--safe-bottom) + 16px) !important;
 }
 
 .btn,
@@ -2384,7 +2386,7 @@ textarea::placeholder,
 .quick-dock{
   position: fixed;
   left: 50%;
-  bottom: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   width: min(960px, calc(100vw - 16px));
   display: grid;
@@ -2397,6 +2399,11 @@ textarea::placeholder,
   backdrop-filter: blur(10px);
   z-index: 150;
   pointer-events: none;
+}
+
+/* Keep one primary reset action visible in demo flow */
+body[data-app="alibi"] #btnResetDemoHeader{
+  display: none;
 }
 
 .qd-btn{
@@ -2469,5 +2476,21 @@ body.demo-focus #quickDockHint{
 @media (max-width: 860px){
   .quick-dock{
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-height: 760px){
+  .main{
+    --quick-dock-space: 210px;
+  }
+  .tour-card{
+    top: 72px;
+    bottom: auto;
+    max-height: calc(100vh - 88px);
+    overflow: auto;
+  }
+  body.tour-active .quick-dock{
+    opacity: .22;
+    pointer-events: none;
   }
 }
