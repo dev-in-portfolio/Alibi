@@ -21,7 +21,16 @@
 </link></head>
 <body data-app="alibi">
 <header class="topbar dropdown-topbar">
+<button aria-expanded="false" aria-label="Toggle menu" class="menu-btn" id="menuToggle" type="button">☰</button>
 <div class="menu-title">Alibi — Logged &amp; Verified</div>
+<div class="dropdown hidden" id="dropdownMenu">
+<button class="tile-nav-btn" data-goto-tab="dashboard" type="button">Dashboard</button>
+<button class="tile-nav-btn" data-goto-tab="counting" type="button">Counting</button>
+<button class="tile-nav-btn" data-goto-tab="invoices" type="button">Invoices</button>
+<button class="tile-nav-btn" data-goto-tab="recipes" type="button">Recipes</button>
+<button class="tile-nav-btn" data-goto-tab="reports" type="button">Reports</button>
+<button class="tile-nav-btn" data-goto-tab="settings" type="button">Settings</button>
+</div>
 </header>
 <nav aria-label="Primary navigation" class="tile-row-nav">
 <button class="tile-nav-btn" data-goto-tab="dashboard" type="button">Dashboard</button>
@@ -29,6 +38,7 @@
 <button class="tile-nav-btn" data-goto-tab="invoices" type="button">Invoices</button>
 <button class="tile-nav-btn" data-goto-tab="recipes" type="button">Recipes</button>
 <button class="tile-nav-btn" data-goto-tab="reports" type="button">Reports</button>
+<button class="tile-nav-btn" data-goto-tab="settings" type="button">Settings</button>
 </nav>
 <section aria-label="Kitchen Inventory" class="module-tile">
 <div class="mt-top">
@@ -49,7 +59,10 @@
 <button class="btn ghost" id="btnNewMonth" title="Create month" type="button">+ Month</button>
 <button class="btn ghost" id="btnExportBackup" title="Export full backup JSON" type="button">Export</button>
 <button class="btn ghost" id="btnImportBackup" title="Import backup JSON" type="button">Import</button>
-<button class="btn ghost" id="btnLoadDemoTour" title="Load sample data and start guided tour" type="button">Demo Tour</button>
+<button class="btn ghost" id="btnResetDemoHeader" title="Reset demo data now" type="button">Reset Demo</button>
+<span class="badge" id="buildTag">Build demo-tour-24</span>
+<span class="badge" id="demoDataTag">Demo M0 I0 V0 R0</span>
+<span class="badge" id="demoUiTag">UI C0 I0 R0 F0 U0</span>
 <div aria-live="polite" class="save-status" id="saveStatus">
 <span class="dot"></span><span class="label">Saved</span>
 </div>
@@ -59,7 +72,40 @@
 </div>
 </div>
 </div></section>
+<div aria-modal="true" class="auth-gate hidden" id="authGate" role="dialog">
+<div class="auth-card">
+<h3>Alibi Demo Login</h3>
+<p class="hint">Use demo credentials to continue.</p>
+<label>Username
+      <input autocomplete="username" class="input" id="authUser" placeholder="demo"/>
+</label>
+<label>Password
+      <input autocomplete="current-password" class="input" id="authPass" placeholder="demo" type="password"/>
+</label>
+<div class="row">
+<button class="btn" id="authLoginBtn" type="button">Login</button>
+<span class="hint grow" id="authMsg"></span>
+</div>
+</div>
+</div>
+<section aria-label="Quick Actions" class="quick-dock" id="quickDock">
+<button class="qd-btn" id="qdDash" type="button">Dashboard</button>
+<button class="qd-btn" id="qdCount" type="button">Count</button>
+<button class="qd-btn" id="qdInvoice" type="button">New Invoice</button>
+<button class="qd-btn" id="qdReports" type="button">Reports</button>
+<button class="qd-btn" id="qdRecalc" type="button">Recalc</button>
+<button class="qd-btn" id="qdSettings" type="button">Settings</button>
+<span class="qd-hint" id="quickDockHint">Shortcuts: Alt+1..6, Alt+N new invoice, Alt+R recalc</span>
+</section>
 <main class="main" id="main">
+<div class="demo-mode hidden" id="demoModeBanner">
+<span>DEMO MODE: sample restaurant data loaded</span>
+<div class="row">
+<button class="btn ghost" id="btnHappyPath" type="button">2-Min Happy Path</button>
+<button class="btn ghost" id="btnRestartTour" type="button">Restart Tour</button>
+<button class="btn ghost" id="btnResetDemoNow" type="button">Reset Demo</button>
+</div>
+</div>
 <!-- DASHBOARD -->
 <section class="panel active" id="panel-dashboard">
 <div aria-label="Dashboard quick stats" class="dash-tiles">
@@ -214,7 +260,39 @@
 </div>
 </div>
 <!-- Walkthrough overlay -->
-<div aria-modal="true" class="overlay hidden" id="walkOverlay" role="dialog"><h1>Alibi</h1><h2>Kitchen inventory workflow</h2><p>Tap anywhere to enter</p></div>
+<div aria-modal="true" class="overlay hidden" id="walkOverlay" role="dialog">
+<div class="overlay-card">
+<div class="overlay-h">
+<div>
+<div class="overlay-title">Walk Count</div>
+<div class="overlay-sub" id="walkCrumb">Location → Section</div>
+</div>
+<button class="btn ghost" id="btnCloseWalk" type="button">Close</button>
+</div>
+<div class="count-card">
+<div class="count-name" id="walkItemName">Item</div>
+<div class="row">
+<label class="grow">Qty <input class="input" id="walkQty" inputmode="decimal" placeholder="0"/></label>
+<label class="grow">Unit <select class="select" id="walkUnit"></select></label>
+</div>
+<div class="row">
+<button class="btn ghost" id="btnZero" type="button">Zero</button>
+<button class="btn ghost" id="btnSameAsLast" type="button">Same as Last</button>
+<span class="hint grow" id="walkGhost">Last month: —</span>
+</div>
+<div class="row">
+<button class="btn ghost" id="btnPrevItem" type="button">Prev</button>
+<button class="btn" id="btnNextItem" type="button">Next</button>
+<span class="badge" id="walkProgress">Item 1 of 1</span>
+</div>
+<div class="divider"></div>
+<label>Finding Note <input class="input" id="walkNote" placeholder="Observed issue while counting..."/></label>
+<div class="row">
+<button class="btn ghost" id="btnWalkSaveFinding" type="button">Save Finding</button>
+</div>
+</div>
+</div>
+</div>
 </section>
 <!-- INVOICES -->
 <section class="panel" id="panel-invoices">
@@ -242,7 +320,24 @@
 </div>
 <div class="form" id="invoiceEditor"></div>
 <!-- Paste-many modal -->
-<div aria-modal="true" class="overlay hidden" id="pasteModal" role="dialog"><h1>Alibi</h1><h2>Invoice line entry</h2><p>Tap anywhere to enter</p></div>
+<div aria-modal="true" class="overlay hidden" id="pasteModal" role="dialog">
+<div class="overlay-card">
+<div class="overlay-h">
+<div>
+<div class="overlay-title">Paste Invoice Lines</div>
+<div class="overlay-sub">Format: name, qty, unit, unit cost</div>
+</div>
+<button class="btn ghost" id="btnClosePaste" type="button">Close</button>
+</div>
+<label>Paste rows
+            <textarea class="textarea" id="pasteArea" placeholder="Chicken Thigh,96,lb,2.82&#10;Olive Oil,12,qt,8.95"></textarea>
+</label>
+<div class="row">
+<button class="btn" id="btnApplyPaste" type="button">Apply</button>
+<span class="hint grow" id="pasteResult">—</span>
+</div>
+</div>
+</div>
 </div>
 </div>
 </section>
@@ -406,6 +501,7 @@
 <div class="row">
 <button class="btn" id="btnSaveSettings" type="button">Save</button>
 <button class="btn ghost" id="btnResetSeed" type="button">Reset App Data</button>
+<button class="btn ghost" id="btnClearLocalData" type="button">Delete Local Data</button>
 </div>
 <div class="divider"></div>
 <details class="details">
@@ -446,7 +542,68 @@
 <!-- PHASE5_REPORTS -->
 <!-- JSZip (CDN) -->
 <script defer="defer" src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-<script defer="defer" src="app.js"></script>
+<script>
+(function(){
+  const CLEAN_KEY = "alibi.clean.boot.demo-tour-24";
+  let shouldClean = false;
+  try{
+    shouldClean = localStorage.getItem(CLEAN_KEY) !== "1";
+  }catch(_e){}
+  if(!shouldClean) return;
+
+  const finish = () => {
+    try{ localStorage.setItem(CLEAN_KEY, "1"); }catch(_e){}
+    try{
+      const url = new URL(window.location.href);
+      url.searchParams.set("v", "demo-tour-24");
+      url.searchParams.set("forceDemo", "1");
+      window.location.replace(url.toString());
+    }catch(_e){
+      window.location.replace(window.location.pathname + "?v=demo-tour-24&forceDemo=1");
+    }
+  };
+
+  Promise.resolve()
+    .then(async () => {
+      const keepAlibiScoped = (name) => /^(alibi\.|kitchen_inventory_|vendorMem$)/i.test(String(name||""));
+      try{
+        Object.keys(localStorage).forEach((k)=>{ if(keepAlibiScoped(k)) localStorage.removeItem(k); });
+      }catch(_e){}
+      try{
+        Object.keys(sessionStorage).forEach((k)=>{ if(keepAlibiScoped(k)) sessionStorage.removeItem(k); });
+      }catch(_e){}
+      try{
+        if("caches" in window){
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => keepAlibiScoped(k) ? caches.delete(k) : Promise.resolve(false)));
+        }
+      }catch(_e){}
+      try{
+        if("indexedDB" in window && typeof indexedDB.databases === "function"){
+          const dbs = await indexedDB.databases();
+          await Promise.all((dbs || []).map((d) => new Promise((res) => {
+            if(!d || !d.name) return res();
+            if(!keepAlibiScoped(d.name)) return res();
+            const req = indexedDB.deleteDatabase(d.name);
+            req.onsuccess = req.onerror = req.onblocked = () => res();
+          })));
+        }
+      }catch(_e){}
+      try{
+        if("serviceWorker" in navigator){
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map((r) => {
+            const scope = String(r?.scope || "");
+            const activeUrl = String(r?.active?.scriptURL || "");
+            return (scope.includes("alibi") || activeUrl.includes("alibi")) ? r.unregister() : Promise.resolve(false);
+          }));
+        }
+      }catch(_e){}
+    })
+    .finally(finish);
+})();
+</script>
+<script defer="defer" src="app.js?v=demo-tour-24"></script>
 <style>
 /* ===== Phase 4: Accessibility, Contrast, & Perception ===== */
 /* Kill default shiny-blue links globally (unless explicitly styled) */

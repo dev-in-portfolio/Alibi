@@ -274,7 +274,7 @@ body{
   align-items:center;
   justify-content:center;
   padding: 16px;
-  z-index: 200;
+  z-index: 1200;
 }
 .overlay.hidden{ display:none; }
 
@@ -424,7 +424,7 @@ button:focus{outline:2px solid rgba(124,58,237,.4); outline-offset:2px}
 .badge{padding:2px 6px;border-radius:999px;font-size:11px;border:1px solid var(--border)}
 .badge.warn{background:rgba(245,158,11,.15)}
 .badge.lock{background:rgba(124,58,237,.15)}
-.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:1200}
 .modal.open{display:flex}
 .modal-card{background:var(--card);border-radius:12px;padding:12px;min-width:280px}
 
@@ -1443,8 +1443,10 @@ header.dropdown-topbar .dropdown{
   margin: 10px auto 0 auto;
   padding: 0 12px;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
-  overflow-x: auto;
+  overflow-x: visible;
   -webkit-overflow-scrolling: touch;
 }
 .tile-row-nav::-webkit-scrollbar{ height: 6px; }
@@ -1604,6 +1606,18 @@ header.dropdown-topbar .dropdown{
 .card, .tile, .overlay-card{ background: var(--hc-bg-card); }
 .card *, .tile *, .overlay-card *{ color: var(--hc-text); }
 .muted, .meta{ color: var(--hc-muted) !important; }
+
+/* BUGFIX: list rows were light while text was forced white, making data appear invisible.
+   Keep row surfaces dark so white text remains readable across Counting/Invoices/Recipes/Reports. */
+body[data-app="alibi"] .card .item{
+  background: rgba(255,255,255,0.07) !important;
+  border-color: rgba(255,255,255,0.16) !important;
+}
+body[data-app="alibi"] .card .item .title,
+body[data-app="alibi"] .card .item .meta,
+body[data-app="alibi"] .card .item .badge{
+  color: #ffffff !important;
+}
 
 /* ===============================
    PHASE2_PERIODS
@@ -2241,7 +2255,7 @@ body[data-app="alibi"] .module-tile .top-actions .action-buttons #saveStatus.sav
 .tour-shell{
   position: fixed;
   inset: 0;
-  z-index: 1200;
+  z-index: 9998;
   pointer-events: none;
 }
 
@@ -2292,7 +2306,7 @@ body[data-app="alibi"] .module-tile .top-actions .action-buttons #saveStatus.sav
 
 .tour-focus{
   position: relative;
-  z-index: 1201;
+  z-index: 9999;
   outline: 3px solid color-mix(in srgb, var(--accent) 72%, #fff);
   outline-offset: 4px;
   border-radius: 10px;
@@ -2309,5 +2323,151 @@ body.tour-active{
     right: 12px;
     width: auto;
     bottom: 12px;
+  }
+}
+
+.demo-mode{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  border: 1px solid rgba(168,85,247,0.55);
+  border-radius: 12px;
+  background: rgba(93,43,189,0.16);
+  color: color-mix(in srgb, var(--text) 88%, #fff);
+  font-weight: 700;
+}
+
+/* Final form control contrast lock */
+input,
+select,
+textarea,
+.input,
+.select,
+.textarea{
+  background: #000 !important;
+  color: #fff !important;
+  border-color: rgba(255,255,255,0.28) !important;
+}
+
+input::placeholder,
+textarea::placeholder,
+.input::placeholder,
+.textarea::placeholder{
+  color: rgba(255,255,255,0.65) !important;
+}
+
+/* Usability pass: faster primary actions + clearer button states */
+.main{
+  padding-bottom: 170px !important;
+}
+
+.btn,
+.tile-nav-btn,
+.qd-btn{
+  min-height: 44px;
+  line-height: 1.1;
+}
+
+.tile-nav-btn{
+  transition: background .14s ease, border-color .14s ease, color .14s ease;
+}
+
+.tile-nav-btn.active{
+  background: rgba(124,58,237,.24) !important;
+  border-color: rgba(167,139,250,.55) !important;
+  color: #ffffff !important;
+}
+
+.quick-dock{
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  width: min(960px, calc(100vw - 16px));
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 14px;
+  background: rgba(8,11,20,.9);
+  backdrop-filter: blur(10px);
+  z-index: 150;
+  pointer-events: none;
+}
+
+.qd-btn{
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 10px;
+  background: rgba(27,31,54,.94);
+  color: #f7f8ff;
+  font-weight: 700;
+  padding: 10px 8px;
+  pointer-events: auto;
+}
+
+.qd-btn.active{
+  background: linear-gradient(180deg,#8b5cf6,#6d28d9);
+  border-color: rgba(221,214,254,.8);
+  color: #fff;
+}
+
+.qd-hint{
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: #c6c9ec;
+  text-align: center;
+  pointer-events: none;
+}
+
+body.auth-locked{
+  overflow: hidden;
+}
+
+.auth-gate{
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4,7,14,.82);
+  z-index: 2000;
+}
+
+.auth-gate.hidden{
+  display: none;
+}
+
+.auth-card{
+  width: min(420px, calc(100vw - 20px));
+  background: #0e1326;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.45);
+}
+
+.auth-card h3{
+  margin: 0 0 8px;
+}
+
+/* Demo polish: lower noise at start of session */
+body.demo-focus #buildTag,
+body.demo-focus #demoDataTag,
+body.demo-focus #demoUiTag,
+body.demo-focus #quickDockHint{
+  display: none !important;
+}
+
+#demoModeBanner .row{
+  justify-content: flex-end;
+}
+
+@media (max-width: 860px){
+  .quick-dock{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
